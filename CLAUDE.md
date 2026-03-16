@@ -23,16 +23,18 @@ The Xcode project lives in `App/Template.xcodeproj`. The workspace at root refer
 **9 SPM dynamic library targets + 1 Xcode app target:**
 
 ```
-App/TemplateApp.swift          @main entry point (Xcode target)
-    └── Template module        App orchestration (AppRoot, AppState, AppTabView, Destinations)
-        ├── AuthorizationUI    Login, Registration screens
-        ├── MainUI             Main tab screen
-        ├── ProfileUI          Profile, Settings screens
-        ├── Navigation         Generic Router, SimpleRouter, AppTab, destinations
-        ├── Design             UI components, colors, fonts, images (has Resources/)
-        ├── Client             NetworkClient, Auth, CurrentUser, API endpoints
-        ├── Core               ErrorManager, KeychainWrapper, Haptic, validation wrappers
-        └── Models             User, Token, Empty, API response types
+App/TemplateApp.swift              @main entry point (Xcode target)
+    └── Template module            App orchestration (AppRoot, AppState, AppTabView, Destinations)
+        ├── Features/
+        │   ├── AuthorizationUI    Login, Registration screens
+        │   ├── MainUI             Main tab screen
+        │   └── ProfileUI          Profile, Settings screens
+        └── Base/
+            ├── Navigation         Generic Router, SimpleRouter, AppTab, destinations
+            ├── Design             UI components, colors, fonts, images (has Resources/)
+            ├── Client             NetworkClient, Auth, CurrentUser, API endpoints
+            ├── Core               ErrorManager, KeychainWrapper, Haptic, validation wrappers
+            └── Models             User, Token, Empty, API response types
 ```
 
 **Dependency graph:** Design/Core/Models are standalone → Navigation depends on Design+Models → Client depends on Models+Core → Features depend on all base modules → Template depends on everything.

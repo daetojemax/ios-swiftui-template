@@ -14,16 +14,18 @@ A production-ready iOS app template with modular SPM architecture. Swift 6.2, iO
 ## Architecture
 
 ```
-App/TemplateApp.swift              @main entry point (Xcode target)
-    └── Template                   App orchestration
-        ├── AuthorizationUI        Login, Registration
-        ├── MainUI                 Main tab
-        ├── ProfileUI              Profile, Settings
-        ├── Navigation             Router, tabs, destinations
-        ├── Design                 UI components, colors, fonts
-        ├── Client                 NetworkClient, Auth, API
-        ├── Core                   ErrorManager, Keychain, utilities
-        └── Models                 Data models, API types
+App/TemplateApp.swift                  @main entry point (Xcode target)
+    └── Template                       App orchestration
+        ├── Features/
+        │   ├── AuthorizationUI        Login, Registration
+        │   ├── MainUI                 Main tab
+        │   └── ProfileUI              Profile, Settings
+        └── Base/
+            ├── Navigation             Router, tabs, destinations
+            ├── Design                 UI components, colors, fonts
+            ├── Client                 NetworkClient, Auth, API
+            ├── Core                   ErrorManager, Keychain, utilities
+            └── Models                 Data models, API types
 ```
 
 ## Getting Started
