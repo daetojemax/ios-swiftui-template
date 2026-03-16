@@ -4,7 +4,7 @@ import SwiftUI
 
 struct AppTabView: View {
     @Environment(AppRouter.self) var router
-    let tabs: [AppTab] = [.main, .profile]
+    let tabs: [AppTab] = [.main, .profile, .console]
 
     var body: some View {
         @Bindable var router = router

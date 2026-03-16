@@ -2,6 +2,7 @@ import Design
 import MainUI
 import Navigation
 import ProfileUI
+import PulseUI
 import SwiftUI
 
 private struct CurrentTabKey: EnvironmentKey {
@@ -42,6 +43,8 @@ private extension AppTab {
         switch self {
         case .main:
             MainScreen()
+        case .console:
+            ConsoleView()
         case .profile:
             ProfileScreen()
         }

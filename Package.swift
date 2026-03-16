@@ -2,9 +2,9 @@
 import PackageDescription
 
 let package = Package(
-    name: "template",
+    name: "Template",
     defaultLocalization: "en",
-    platforms: [.iOS(.v17), .macOS(.v14)],
+    platforms: [.iOS(.v17)],
     products: [
         .library(name: "Template", type: .dynamic, targets: ["Template"]),
         .library(name: "Design", type: .dynamic, targets: ["Design"]),
@@ -15,6 +15,10 @@ let package = Package(
         .library(name: "AuthorizationUI", type: .dynamic, targets: ["AuthorizationUI"]),
         .library(name: "MainUI", type: .dynamic, targets: ["MainUI"]),
         .library(name: "ProfileUI", type: .dynamic, targets: ["ProfileUI"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/evgenyneu/keychain-swift.git", from: "24.0.0"),
+        .package(url: "https://github.com/kean/Pulse.git", from: "5.0.0"),
     ],
     targets: [
         .target(
@@ -27,10 +31,11 @@ let package = Package(
                 "AuthorizationUI",
                 "MainUI",
                 "ProfileUI",
+                .product(name: "PulseUI", package: "Pulse"),
             ]
         ),
 
-        // Base modules
+        // MARK: Base modules
         .target(
             name: "Design",
             path: "Sources/Base/Design",
@@ -41,6 +46,9 @@ let package = Package(
 
         .target(
             name: "Core",
+            dependencies: [
+                .product(name: "KeychainSwift", package: "keychain-swift"),
+            ],
             path: "Sources/Base/Core"
         ),
 
@@ -54,6 +62,7 @@ let package = Package(
             dependencies: [
                 "Models",
                 "Core",
+                .product(name: "Pulse", package: "Pulse"),
             ],
             path: "Sources/Base/Client"
         ),
@@ -67,7 +76,7 @@ let package = Package(
             path: "Sources/Base/Navigation"
         ),
 
-        // Feature modules
+        // MARK: Feature modules
         .target(
             name: "AuthorizationUI",
             dependencies: [

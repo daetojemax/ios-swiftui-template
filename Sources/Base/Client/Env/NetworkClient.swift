@@ -1,17 +1,18 @@
 import Foundation
 import Observation
 import Core
+@preconcurrency import Pulse
 
 @Observable
 public final class NetworkClient: Sendable {
 
-    private let session: URLSession
+    let session: URLSessionProtocol
 
     public init() {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 30
         configuration.timeoutIntervalForResource = 60
-        session = URLSession(configuration: configuration)
+        session = URLSessionProxy(configuration: configuration)
     }
 
     public func request<T: Codable>(_ endpoint: APIEndpoint) async throws -> T {

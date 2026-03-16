@@ -1,54 +1,23 @@
 import Foundation
-import Security
+import KeychainSwift
 
 public struct KeychainWrapper {
 
-    private static let serviceName = "template"
+    private nonisolated(unsafe) static let keychain: KeychainSwift = {
+        let kc = KeychainSwift()
+        kc.accessGroup = nil
+        return kc
+    }()
 
     public static func set(_ value: String, for key: String) {
-        guard let data = value.data(using: .utf8) else { return }
-
-        // Delete existing item first
-        delete(key)
-
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: serviceName,
-            kSecAttrAccount as String: key,
-            kSecValueData as String: data,
-        ]
-
-        SecItemAdd(query as CFDictionary, nil)
+        keychain.set(value, forKey: key)
     }
 
     public static func get(_ key: String) -> String? {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: serviceName,
-            kSecAttrAccount as String: key,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
-        ]
-
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-
-        guard status == errSecSuccess,
-              let data = result as? Data,
-              let string = String(data: data, encoding: .utf8) else {
-            return nil
-        }
-
-        return string
+        keychain.get(key)
     }
 
     public static func delete(_ key: String) {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: serviceName,
-            kSecAttrAccount as String: key,
-        ]
-
-        SecItemDelete(query as CFDictionary)
+        keychain.delete(key)
     }
 }

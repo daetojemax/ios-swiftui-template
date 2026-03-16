@@ -29,7 +29,7 @@
 
 /* Begin PBXFileReference section */
 		B71DF2892F67B6B90025573A /* template.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = template.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B71DF3202F67D0000025573A /* template */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = template; path = ..; sourceTree = "<group>"; };
+		B71DF3202F67D0000025573A /* Template */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Template; path = ..; sourceTree = "<group>"; };
 		B71DF3412F68A0010025573A /* TemplateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateApp.swift; sourceTree = SOURCE_ROOT; };
 		B71DF3432F68A0010025573A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -49,7 +49,7 @@
 		B71DF2802F67B6B90025573A = {
 			isa = PBXGroup;
 			children = (
-				B71DF3202F67D0000025573A /* template */,
+				B71DF3202F67D0000025573A /* Template */,
 				B71DF28C2F67B6B90025573A /* App */,
 				B71DF28A2F67B6B90025573A /* Products */,
 			);
@@ -111,7 +111,7 @@
 					};
 				};
 			};
-			buildConfigurationList = B71DF2842F67B6B90025573A /* Build configuration list for PBXProject "template" */;
+			buildConfigurationList = B71DF2842F67B6B90025573A /* Build configuration list for PBXProject "TemplateApp" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -296,6 +296,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = plus.studio.template;
+				PRODUCT_MODULE_NAME = TemplateApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -328,6 +329,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = plus.studio.template;
+				PRODUCT_MODULE_NAME = TemplateApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -340,7 +342,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B71DF2842F67B6B90025573A /* Build configuration list for PBXProject "template" */ = {
+		B71DF2842F67B6B90025573A /* Build configuration list for PBXProject "TemplateApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B71DF2A82F67B6BC0025573A /* Debug */,

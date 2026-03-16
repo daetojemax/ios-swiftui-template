@@ -1,4 +1,3 @@
-#if canImport(UIKit)
 import UIKit
 
 @MainActor
@@ -12,4 +11,3 @@ public class Haptic {
         UINotificationFeedbackGenerator().notificationOccurred(feedbackType)
     }
 }
-#endif
