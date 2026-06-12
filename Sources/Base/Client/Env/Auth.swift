@@ -4,20 +4,22 @@ import Observation
 import Models
 
 public struct AuthConfiguration: Sendable {
-    public let token: String
+    public let accessToken: String
+    public let refreshToken: String
     public let user: User
 
-    public init(token: String, user: User) {
-        self.token = token
+    public init(accessToken: String, refreshToken: String, user: User) {
+        self.accessToken = accessToken
+        self.refreshToken = refreshToken
         self.user = user
     }
 }
 
 @Observable
+@MainActor
 public final class Auth: Sendable {
-    private let keychainTokenKey = "access_token"
-    private let keychainUserKey = "user_data"
 
+    private var client: NetworkClient?
     private let configurationContinuation: AsyncStream<AuthConfiguration?>.Continuation?
     public let configurationUpdates: AsyncStream<AuthConfiguration?>
 
@@ -26,30 +28,81 @@ public final class Auth: Sendable {
         self.configurationUpdates = stream
         self.configurationContinuation = continuation
     }
+}
 
-    public func refresh() async {
+// MARK: - Configuration
+
+public extension Auth {
+    func configure(client: NetworkClient) {
+        self.client = client
+    }
+}
+
+// MARK: - Session
+
+public extension Auth {
+    func refresh() async {
         let configuration = await loadStoredConfiguration()
         configurationContinuation?.yield(configuration)
     }
 
-    public func logout(using client: NetworkClient) async {
-        let _: Empty? = try? await client.request(AuthAPI.logout)
+    func setAuthenticated(accessToken: String, refreshToken: String, user: User) {
+        KeychainWrapper.set(accessToken, for: AuthStorageKey.accessToken)
+        KeychainWrapper.set(refreshToken, for: AuthStorageKey.refreshToken)
+        KeychainWrapper.set("true", for: AuthStorageKey.isAuthenticated)
 
-        KeychainWrapper.delete(keychainTokenKey)
-        KeychainWrapper.delete(keychainUserKey)
+        if let userData = try? JSONEncoder().encode(user),
+           let userString = String(data: userData, encoding: .utf8) {
+            KeychainWrapper.set(userString, for: AuthStorageKey.userData)
+        }
+
+        configurationContinuation?.yield(
+            AuthConfiguration(
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                user: user
+            )
+        )
+    }
+
+    func logout() async throws {
+        if let client {
+            let _: Empty = try await client.request(AuthAPI.logout)
+        }
+
+        clearStoredConfiguration()
         configurationContinuation?.yield(nil)
     }
 
-    private func loadStoredConfiguration() async -> AuthConfiguration? {
-        guard let token = KeychainWrapper.get(keychainTokenKey),
-              let userString = KeychainWrapper.get(keychainUserKey),
+    func invalidateSession() {
+        clearStoredConfiguration()
+        configurationContinuation?.yield(nil)
+    }
+
+    func clearStoredConfiguration() {
+        KeychainWrapper.delete(AuthStorageKey.accessToken)
+        KeychainWrapper.delete(AuthStorageKey.refreshToken)
+        KeychainWrapper.delete(AuthStorageKey.userData)
+        KeychainWrapper.delete(AuthStorageKey.isAuthenticated)
+    }
+}
+
+// MARK: - Private
+
+private extension Auth {
+    func loadStoredConfiguration() async -> AuthConfiguration? {
+        guard let accessToken = KeychainWrapper.get(AuthStorageKey.accessToken),
+              let refreshToken = KeychainWrapper.get(AuthStorageKey.refreshToken),
+              KeychainWrapper.get(AuthStorageKey.isAuthenticated) == "true",
+              let userString = KeychainWrapper.get(AuthStorageKey.userData),
               let userData = userString.data(using: String.Encoding.utf8),
               let user = try? JSONDecoder().decode(User.self, from: userData) else {
             return nil
         }
 
         return AuthConfiguration(
-            token: token,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
             user: user
         )
     }

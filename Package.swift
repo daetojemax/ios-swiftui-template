@@ -15,6 +15,8 @@ let package = Package(
         .library(name: "AuthorizationUI", type: .dynamic, targets: ["AuthorizationUI"]),
         .library(name: "MainUI", type: .dynamic, targets: ["MainUI"]),
         .library(name: "ProfileUI", type: .dynamic, targets: ["ProfileUI"]),
+        .library(name: "SplashUI", type: .dynamic, targets: ["SplashUI"]),
+        .library(name: "OnboardingUI", type: .dynamic, targets: ["OnboardingUI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/evgenyneu/keychain-swift.git", from: "24.0.0"),
@@ -31,6 +33,8 @@ let package = Package(
                 "AuthorizationUI",
                 "MainUI",
                 "ProfileUI",
+                "SplashUI",
+                "OnboardingUI",
                 .product(name: "PulseUI", package: "Pulse"),
             ]
         ),
@@ -108,6 +112,22 @@ let package = Package(
                 "Navigation",
             ],
             path: "Sources/Features/ProfileUI"
+        ),
+
+        .target(
+            name: "SplashUI",
+            dependencies: [
+                "Design",
+            ],
+            path: "Sources/Features/SplashUI"
+        ),
+
+        .target(
+            name: "OnboardingUI",
+            dependencies: [
+                "Design",
+            ],
+            path: "Sources/Features/OnboardingUI"
         ),
     ]
 )

@@ -24,7 +24,7 @@ struct AppTabView: View {
                     }
                     .tag(tab)
                     #if !os(macOS)
-                    .toolbarBackground(Color.BG.primary, for: .tabBar)
+                    .toolbarBackground(Color.Fill.white, for: .tabBar)
                     .toolbarBackground(.visible, for: .tabBar)
                     #endif
             }

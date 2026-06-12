@@ -7,6 +7,7 @@ public enum NetworkError: Error, LocalizedError {
     case httpError(Int)
     case unauthorized
     case serverError(String)
+    case pending
     case failedRefreshToken(reason: String)
 
     public var errorDescription: String? {
@@ -22,7 +23,9 @@ public enum NetworkError: Error, LocalizedError {
         case .unauthorized:
             return "Unauthorized"
         case .serverError(let message):
-            return "Server error: \(message)"
+            return message
+        case .pending:
+            return "Pending"
         case .failedRefreshToken(let reason):
             return "Failed to refresh token: \(reason)"
         }

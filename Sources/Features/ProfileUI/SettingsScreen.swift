@@ -6,9 +6,7 @@ public struct SettingsScreen: View {
     public init() {}
 
     public var body: some View {
-        VStack(spacing: 0) {
-            HeaderView(title: "Settings", type: .navigation)
-
+        VStack(spacing: 8) {
             Spacer()
 
             Text("Settings Screen")
@@ -17,12 +15,13 @@ public struct SettingsScreen: View {
 
             Text("App settings go here")
                 .font(.sizeText)
-                .foregroundStyle(Color.Text.grey4)
-                .padding(.top, 8)
+                .foregroundStyle(Color.Fill.black.opacity(0.55))
 
             Spacer()
         }
         .fill(.all)
-        .background(Color.BG.primary)
+        .background(Color.Fill.white)
+        .navigationTitle("Settings")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

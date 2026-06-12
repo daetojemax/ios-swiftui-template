@@ -5,53 +5,116 @@ import Core
 
 @Observable
 public final class NetworkClient: Sendable {
-
+    
     let session: URLSessionProtocol
-
+    private let refreshManager: RefreshManager = .init()
+    private let authenticationExpiredContinuation: AsyncStream<Void>.Continuation?
+    public let authenticationExpiredUpdates: AsyncStream<Void>
+    
     public init() {
+        let (stream, continuation) = AsyncStream<Void>.makeStream()
+        self.authenticationExpiredUpdates = stream
+        self.authenticationExpiredContinuation = continuation
+        
         let configuration = URLSessionConfiguration.default
-        configuration.timeoutIntervalForRequest = 30
-        configuration.timeoutIntervalForResource = 60
+        configuration.timeoutIntervalForRequest = NetworkConst.requestTimeout
+        configuration.timeoutIntervalForResource = NetworkConst.requestTimeout
         session = URLSessionProxy(configuration: configuration)
     }
+    
+    public func request<T: Codable>(_ endpoint: APIEndpoint, allowRetry: Bool = true) async throws -> T {
+        do {
+            return try await performRequest(endpoint)
+        } catch NetworkError.unauthorized where !endpoint.isAuthorizeRequest {
+            if allowRetry {
+                do {
+                    try await refreshManager.refresh()
+                } catch {
+                    await expireAuthentication()
+                    throw error
+                }
+                return try await request(endpoint, allowRetry: false)
+            }
+            await expireAuthentication()
+            throw NetworkError.failedRefreshToken(reason: "401 after refresh")
+        }
+    }
+    
+}
 
-    public func request<T: Codable>(_ endpoint: APIEndpoint) async throws -> T {
+// MARK: - Request
+
+private extension NetworkClient {
+    func performRequest<T: Codable>(_ endpoint: APIEndpoint) async throws -> T {
         let request = try endpoint.request
-
-        #if DEBUG
+        
+#if DEBUG
         printRequest(request)
-        #endif
-
+#endif
+        
         let (data, response) = try await session.data(for: request)
-
+        
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NetworkError.noData
         }
-
-        #if DEBUG
+        
+#if DEBUG
         printResponse(statusCode: httpResponse.statusCode, data: data, url: request.url)
-        #endif
-
+#endif
+        
         switch httpResponse.statusCode {
-        case 200 ... 299:
+        case 201:
+            throw NetworkError.pending
+        case 200, 202 ... 299:
             break
         case 401:
             throw NetworkError.unauthorized
         case 500 ... 599:
-            throw NetworkError.serverError("Server error: \(httpResponse.statusCode)")
+            throw makeHTTPError(statusCode: httpResponse.statusCode, data: data)
         default:
-            throw NetworkError.httpError(httpResponse.statusCode)
+            throw makeHTTPError(statusCode: httpResponse.statusCode, data: data)
         }
-
+        
         do {
             let decoder = JSONDecoder()
-            return try decoder.decode(T.self, from: data)
+            let jsonData = data.isEmpty ? "{}".data(using: .utf8)! : data
+            return try decoder.decode(T.self, from: jsonData)
         } catch {
             throw NetworkError.decodingError(error)
         }
     }
+    
+    func expireAuthentication() async {
+        authenticationExpiredContinuation?.yield(())
+    }
+    
+    func makeHTTPError(statusCode: Int, data: Data) -> NetworkError {
+        if let message = decodeErrorMessage(from: data) {
+            return .serverError(message)
+        }
+        
+        if (500 ... 599).contains(statusCode) {
+            return .serverError("Server error")
+        }
+        
+        return .httpError(statusCode)
+    }
+    
+    func decodeErrorMessage(from data: Data) -> String? {
+        guard !data.isEmpty,
+              let response = try? JSONDecoder().decode(ServerErrorResponse.self, from: data) else {
+            return nil
+        }
+        
+        let message = response.message.trimmingCharacters(in: .whitespacesAndNewlines)
+        return message.isEmpty ? nil : message
+    }
+}
 
-    #if DEBUG
+// MARK: - Debug
+
+#if DEBUG
+private extension NetworkClient {
     private func printRequest(_ request: URLRequest) {
         let method = request.httpMethod ?? "GET"
         let urlString = request.url?.absoluteString ?? "Unknown URL"
@@ -75,13 +138,13 @@ public final class NetworkClient: Sendable {
         }
         print("└──────────────────────────────")
     }
-
+    
     private func printResponse(statusCode: Int, data: Data, url: URL?) {
         let urlString = url?.absoluteString ?? "Unknown URL"
         print("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         print("📡 \(urlString)")
         print("📊 Status: \(statusCode)")
-
+        
         if let json = try? JSONSerialization.jsonObject(with: data),
            let prettyData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted),
            let prettyString = String(data: prettyData, encoding: .utf8) {
@@ -95,5 +158,9 @@ public final class NetworkClient: Sendable {
         }
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
     }
-    #endif
+}
+#endif
+
+private struct ServerErrorResponse: Decodable {
+    let message: String
 }

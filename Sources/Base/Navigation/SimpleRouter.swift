@@ -40,19 +40,4 @@ public final class SimpleRouter<Destination: DestinationType, Sheet: SheetType, 
     public func dismissFullScreen() {
         presentedFullScreen = nil
     }
-
-    @discardableResult
-    public func navigate(to url: URL) -> Bool {
-        return URLNavigationHelper.navigate(url: url) { destinations in
-            path = destinations
-        }
-    }
-
-    @discardableResult
-    public func navigate(to urlString: String) -> Bool {
-        guard let url = URL(string: urlString) else {
-            return false
-        }
-        return navigate(to: url)
-    }
 }

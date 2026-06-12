@@ -18,7 +18,7 @@ public enum AppTab: String, TabType {
     public var icon: Image {
         switch self {
         case .main: return Image.homeTabIcon
-        case .console: return Image(systemName: "ant")
+        case .console: return Image(systemName: "gearshape")
         case .profile: return Image.profileTabIcon
         }
     }

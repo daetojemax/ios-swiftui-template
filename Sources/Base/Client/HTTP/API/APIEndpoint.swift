@@ -99,7 +99,7 @@ public extension APIEndpoint {
                                         timeoutInterval: NetworkConst.requestTimeout)
             urlRequest.httpMethod = method.rawValue
 
-            let accessToken = KeychainWrapper.get("access_token")
+            let accessToken = KeychainWrapper.get(AuthStorageKey.accessToken)
             if let accessToken, withToken {
                 urlRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
             }

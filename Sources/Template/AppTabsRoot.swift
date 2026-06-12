@@ -26,9 +26,6 @@ struct AppTabRootView: View {
 
         NavigationStack(path: $router[tab]) {
             tab.rootView
-                #if !os(macOS)
-                .navigationBarHidden(true)
-                #endif
                 .withAppDestinations()
                 .environment(\.currentTab, tab)
         }

@@ -22,11 +22,11 @@ public struct PrimaryButton: View {
             Group {
                 if isLoading {
                     LoadingIndicator(size: .regular,
-                                     color: Color.Text.white)
+                                     color: Color.Fill.white)
                 } else {
                     Text(title)
                         .font(.sizeButton)
-                        .foregroundStyle(Color.Text.white)
+                        .foregroundStyle(Color.Fill.white)
                 }
             }
             .frame(maxWidth: .infinity)

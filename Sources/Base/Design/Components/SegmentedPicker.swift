@@ -40,7 +40,7 @@ public struct SegmentedControl: View {
                 )
         )
         .padding(3)
-        .background(Color.Fill.chipBackground)
+        .background(Color.Fill.black.opacity(0.06))
         .clipShape(
             RoundedRectangle(cornerRadius: 30)
         )

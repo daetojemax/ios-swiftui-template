@@ -6,9 +6,7 @@ public struct MainScreen: View {
     public init() {}
 
     public var body: some View {
-        VStack(spacing: 0) {
-            HeaderView(title: "Main", type: .titleOnly)
-
+        VStack(spacing: 8) {
             Spacer()
 
             Text("Main Screen")
@@ -17,12 +15,11 @@ public struct MainScreen: View {
 
             Text("Your main content goes here")
                 .font(.sizeText)
-                .foregroundStyle(Color.Text.grey4)
-                .padding(.top, 8)
+                .foregroundStyle(Color.Fill.black.opacity(0.55))
 
             Spacer()
         }
         .fill(.all)
-        .background(Color.BG.primary)
+        .background(Color.Fill.white)
     }
 }

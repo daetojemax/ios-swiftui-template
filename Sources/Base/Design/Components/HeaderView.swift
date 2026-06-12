@@ -88,7 +88,7 @@ public struct HeaderView: View {
 
                     Image(systemName: "chevron.left")
                         .font(.system(size: 20, weight: .medium))
-                        .foregroundStyle(Color.Text.white)
+                        .foregroundStyle(Color.Fill.white)
                 }
             }
             .buttonStyle(.plain)

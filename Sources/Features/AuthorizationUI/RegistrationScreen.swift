@@ -6,9 +6,7 @@ public struct RegistrationScreen: View {
     public init() {}
 
     public var body: some View {
-        VStack(spacing: 0) {
-            HeaderView(title: "Registration", type: .navigation)
-
+        VStack(spacing: 8) {
             Spacer()
 
             Text("Registration Screen")
@@ -17,12 +15,11 @@ public struct RegistrationScreen: View {
 
             Text("Create your account here")
                 .font(.sizeText)
-                .foregroundStyle(Color.Text.grey4)
-                .padding(.top, 8)
+                .foregroundStyle(Color.Fill.black.opacity(0.55))
 
             Spacer()
         }
         .fill(.all)
-        .background(Color.BG.primary)
+        .background(Color.Fill.white)
     }
 }
